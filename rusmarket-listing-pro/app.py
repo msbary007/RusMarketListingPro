@@ -3,8 +3,20 @@ import json
 import random
 import sys
 import io
-import pdfplumber
-import docx
+
+try:
+    import pdfplumber
+    HAS_PDF = True
+except ImportError:
+    HAS_PDF = False
+    pdfplumber = None
+
+try:
+    import docx
+    HAS_DOCX = True
+except ImportError:
+    HAS_DOCX = False
+    docx = None
 
 try:
     from flask import Flask, jsonify, request, render_template # type: ignore
@@ -110,6 +122,8 @@ def inject_trust_signals(text, category):
         return text, []
 
 def extract_text_from_pdf(file_stream):
+    if not HAS_PDF:
+        return "Error: pdfplumber library not installed."
     try:
         with pdfplumber.open(file_stream) as pdf:
             text = ""
@@ -121,6 +135,8 @@ def extract_text_from_pdf(file_stream):
         return ""
 
 def extract_text_from_docx(file_stream):
+    if not HAS_DOCX:
+        return "Error: python-docx library not installed."
     try:
         doc = docx.Document(file_stream)
         text = "\n".join([para.text for para in doc.paragraphs])
