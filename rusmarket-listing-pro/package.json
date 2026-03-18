@@ -7,6 +7,11 @@
     "start": "python app.py",
     "build": "echo 'No build step required for Python'"
   },
+  "dependencies": {
+    "next": "latest"
+  },
+  "framework": "nextjs",
+  "buildCommand": "next build",
   "keywords": [
     "flask",
     "python",
