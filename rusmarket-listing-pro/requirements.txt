@@ -3,3 +3,5 @@ python-dotenv
 openai
 google-generativeai
 gunicorn
+pdfplumber
+python-docx

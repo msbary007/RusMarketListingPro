@@ -15,7 +15,11 @@
     <form id="optimizeForm">
         <!-- Input Form -->
         <div class="form-group">
-            <label id="descriptionLabel" data-i18n="descriptionLabel">Product Description</label>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <label id="descriptionLabel" data-i18n="descriptionLabel">Product Description</label>
+                <button type="button" class="btn-small" onclick="document.getElementById('file-input').click()" data-i18n="uploadBtn">📎 Upload File (PDF/DOCX)</button>
+            </div>
+            <input type="file" id="file-input" accept=".pdf,.docx,.txt" style="display: none;">
             <textarea id="text-input" name="text" rows="6" data-i18n-placeholder="placeholderText">Продам айфон 11 64 гб. Состояние хорошее, батарея 85%. Оригинал.</textarea>
             <div class="word-counter" id="wordCount">Words: 0 | Characters: 0</div>
         </div>

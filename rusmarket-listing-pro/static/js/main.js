@@ -37,7 +37,9 @@ const i18n = {
         errorSuggestedCorrection: "Correction:",
         errorType: "Type:",
         errorAnalyzing: "Error analyzing text.",
-        noErrors: "✨ No errors found!"
+        noErrors: "✨ No errors found!",
+        uploadBtn: "📎 Upload File (PDF/DOCX/TXT)",
+        uploading: "Uploading..."
     },
     RU: {
         appSubtitle: "AI-оптимизация описаний для площадок РФ",
@@ -72,7 +74,9 @@ const i18n = {
         errorSuggestedCorrection: "Исправление:",
         errorType: "Тип:",
         errorAnalyzing: "Ошибка при анализе текста.",
-        noErrors: "✨ Ошибок не найдено!"
+        noErrors: "✨ Ошибок не найдено!",
+        uploadBtn: "📎 Загрузить файл (PDF/DOCX/TXT)",
+        uploading: "Загрузка..."
     },
     TR: {
         appSubtitle: "Rusya E-ticareti için Yapay Zeka Destekli Optimizasyon",
@@ -107,7 +111,9 @@ const i18n = {
         errorSuggestedCorrection: "Düzeltme:",
         errorType: "Tür:",
         errorAnalyzing: "Metin analiz edilirken hata oluştu.",
-        noErrors: "✨ Hata bulunamadı!"
+        noErrors: "✨ Hata bulunamadı!",
+        uploadBtn: "📎 Dosya Yükle (PDF/DOCX/TXT)",
+        uploading: "Yükleniyor..."
     },
     ZH: {
         appSubtitle: "俄罗斯电子商务的 AI 驱动优化",
@@ -142,7 +148,9 @@ const i18n = {
         errorSuggestedCorrection: "修改建议:",
         errorType: "类型:",
         errorAnalyzing: "分析文本时出错。",
-        noErrors: "✨ 未发现错误！"
+        noErrors: "✨ 未发现错误！",
+        uploadBtn: "📎 上传文件 (PDF/DOCX/TXT)",
+        uploading: "上传中..."
     },
     BN: {
         appSubtitle: "রাশিয়ান ই-কমার্সের জন্য এআই অপ্টিমাইজেশন",
@@ -177,7 +185,9 @@ const i18n = {
         errorSuggestedCorrection: "সংশোধিত প্রস্তাবনা:",
         errorType: "ধরন:",
         errorAnalyzing: "টেক্সট বিশ্লেষণ করতে ত্রুটি।",
-        noErrors: "✨ কোনো ত্রুটি পাওয়া যায়নি!"
+        noErrors: "✨ কোনো ত্রুটি পাওয়া যায়নি!",
+        uploadBtn: "📎 ফাইল আপলোড করুন (PDF/DOCX/TXT)",
+        uploading: "আপলোড হচ্ছে..."
     }
 };
 
@@ -409,6 +419,46 @@ document.addEventListener('DOMContentLoaded', async () => {
     } catch (e) {
         console.error("Failed to load examples", e);
     }
+
+    // File Upload Listener
+    const fileInput = document.getElementById('file-input');
+    const uploadBtn = document.querySelector('[data-i18n="uploadBtn"]');
+
+    fileInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const originalBtnText = uploadBtn.innerText;
+        uploadBtn.innerText = i18n[currentLang].uploading;
+        uploadBtn.disabled = true;
+
+        try {
+            const res = await fetch('/api/upload', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                document.getElementById('text-input').value = data.text;
+                document.getElementById('text-input').dispatchEvent(new Event('input'));
+                showToast("File uploaded and text extracted!");
+            } else {
+                const errorData = await res.json();
+                alert(errorData.error || "File upload failed.");
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Error uploading file.");
+        } finally {
+            uploadBtn.innerText = originalBtnText;
+            uploadBtn.disabled = false;
+            fileInput.value = ''; // Reset input
+        }
+    });
 });
 
 function updateScore(scoreId, barId, val) {
